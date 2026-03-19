@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archdiocese Hackathon 2026 — Problem Statement Helper</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: #0f0c1a; min-height: 100vh; display: flex; flex-direction: column; align-items: center; color: #e8e0d0; }
+  .top-bar { width: 100%; height: 4px; background: linear-gradient(90deg, #0d47a1, #1565c0, #42a5f5, #1565c0, #0d47a1); }
+
+  /* LOGIN */
+  #login-screen { width: 100%; max-width: 420px; padding: 40px 16px; }
+  #login-screen h1 { font-family: 'Crimson Text', serif; font-size: 22px; color: #f0e6c8; text-align: center; margin-bottom: 2px; }
+  #login-screen h2 { font-family: 'Crimson Text', serif; font-size: 15px; color: #a09880; text-align: center; font-weight: 400; font-style: italic; margin-bottom: 4px; }
+  .crucifix-wrap { display: flex; justify-content: center; margin-bottom: 12px; }
+  .divider { width: 40px; height: 1px; background: linear-gradient(90deg,transparent,#c9a84c,transparent); margin: 12px auto 20px; }
+  .login-box { background: rgba(255,255,255,0.04); border: 1px solid rgba(201,168,76,0.2); border-radius: 16px; padding: 32px; }
+  .field-label { font-size: 12px; color: #a09880; margin-bottom: 6px; }
+  .field { margin-bottom: 16px; }
+  input[type=text], input[type=password] { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(201,168,76,0.25); border-radius: 10px; color: #e8e0d0; font-family: 'Inter', sans-serif; font-size: 14px; padding: 11px 14px; outline: none; transition: border-color 0.2s; }
+  input[type=text]:focus, input[type=password]:focus { border-color: #c9a84c; }
+  input::placeholder { color: #6b6355; }
+  .login-btn { width: 100%; background: linear-gradient(135deg, #1565c0, #0d47a1); border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 500; padding: 13px; cursor: pointer; transition: opacity 0.2s; margin-top: 8px; }
+  .login-btn:hover { opacity: 0.85; }
+  .login-btn:disabled { opacity: 0.4; cursor: default; }
+  .login-error { font-size: 12px; color: #e59b93; text-align: center; margin-top: 10px; min-height: 16px; }
+  .login-note { font-size: 11px; color: #4a4438; text-align: center; margin-top: 14px; font-style: italic; }
+
+  /* CHAT */
+  #chat-screen { display: none; width: 100%; flex-direction: column; align-items: center; flex: 1; }
+  header { width: 100%; max-width: 760px; padding: 28px 24px 16px; text-align: center; }
+  header h1 { font-family: 'Crimson Text', serif; font-size: 24px; color: #f0e6c8; margin-bottom: 2px; }
+  header h2 { font-family: 'Crimson Text', serif; font-size: 15px; color: #a09880; font-weight: 400; font-style: italic; }
+  .progress-bar-wrap { width: 100%; max-width: 760px; padding: 0 16px 8px; }
+  .progress-label { font-size: 11px; color: #7a7060; margin-bottom: 5px; display: flex; justify-content: space-between; }
+  .progress-bar { height: 3px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #1565c0, #c9a84c); border-radius: 3px; transition: width 0.5s ease; }
+  #chat-wrap { width: 100%; max-width: 760px; flex: 1; display: flex; flex-direction: column; padding: 0 16px 16px; gap: 12px; }
+  #messages { display: flex; flex-direction: column; gap: 14px; min-height: 300px; max-height: 480px; overflow-y: auto; padding: 20px 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(201,168,76,0.15); border-radius: 12px; scroll-behavior: smooth; }
+  #messages::-webkit-scrollbar { width: 4px; }
+  #messages::-webkit-scrollbar-thumb { background: #c9a84c44; border-radius: 4px; }
+  .msg { display: flex; gap: 10px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+  .msg.user { flex-direction: row-reverse; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .avatar.bot { background: linear-gradient(135deg,#1565c0,#0d47a1); }
+  .avatar.user { background: linear-gradient(135deg,#c0392b,#e67e22); }
+  .avatar svg { width: 16px; height: 22px; }
+  .bubble { max-width: 82%; padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.65; }
+  .msg.bot .bubble { background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2); border-bottom-left-radius: 4px; color: #e8e0d0; }
+  .msg.user .bubble { background: rgba(21,101,192,0.2); border: 1px solid rgba(21,101,192,0.3); border-bottom-right-radius: 4px; color: #ddeeff; }
+  .bubble strong { color: #c9a84c; }
+  .bubble em { color: #a09880; }
+  .typing-dots span { display: inline-block; width: 7px; height: 7px; background: #c9a84c; border-radius: 50%; margin: 0 2px; animation: bounce 1.2s infinite; }
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+  .input-area { display: flex; gap: 10px; align-items: flex-end; }
+  textarea { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(201,168,76,0.25); border-radius: 12px; color: #e8e0d0; font-family: 'Inter',sans-serif; font-size: 14px; padding: 12px 16px; resize: none; outline: none; min-height: 48px; max-height: 140px; transition: border-color 0.2s; }
+  textarea:focus { border-color: #c9a84c; }
+  textarea::placeholder { color: #6b6355; }
+  #send-btn { background: linear-gradient(135deg,#1565c0,#0d47a1); border: none; border-radius: 10px; color: #fff; cursor: pointer; font-size: 18px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s; flex-shrink: 0; }
+  #send-btn:hover { opacity: 0.85; }
+  #send-btn:disabled { opacity: 0.4; cursor: default; }
+  #summary-panel { display: none; width: 100%; max-width: 760px; margin: 0 16px 24px; background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.25); border-radius: 12px; padding: 24px; }
+  #summary-panel h2 { font-family: 'Crimson Text',serif; font-size: 20px; color: #c9a84c; margin-bottom: 8px; }
+  .sub-status { font-size: 12px; margin-bottom: 16px; padding: 8px 12px; border-radius: 6px; }
+  .sub-status.saving { background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.2); color: #c9a84c; }
+  .sub-status.success { background: rgba(39,174,96,0.15); border: 1px solid rgba(39,174,96,0.3); color: #7dcea0; }
+  .sub-status.error { background: rgba(192,57,43,0.15); border: 1px solid rgba(192,57,43,0.3); color: #e59b93; }
+  #summary-content { font-size: 13px; line-height: 1.8; color: #d0c8b8; white-space: pre-wrap; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 8px; margin-bottom: 16px; max-height: 320px; overflow-y: auto; }
+  .summary-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .summary-actions button { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: opacity 0.2s; }
+  .btn-copy { background: rgba(201,168,76,0.2); border: 1px solid rgba(201,168,76,0.4) !important; color: #c9a84c; }
+  .btn-download { background: linear-gradient(135deg,#1565c0,#0d47a1); color: #fff; }
+  .btn-restart { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1) !important; color: #a09880; }
+  .summary-actions button:hover { opacity: 0.8; }
+  footer { padding: 16px; font-size: 11px; color: #4a4438; text-align: center; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="top-bar"></div>
+
+
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="crucifix-wrap" style="font-size:32px;color:#c9a84c;letter-spacing:4px;">✝</div>
+  <h1>Archdiocese Hackathon 2026</h1>
+  <h2>Problem Statement Helper</h2>
+  <div class="divider"></div>
+  <div class="login-box">
+    <div class="field">
+      <div class="field-label">Username</div>
+      <input type="text" id="username" placeholder="Enter your username"/>
+    </div>
+    <div class="field">
+      <div class="field-label">Password</div>
+      <input type="password" id="password" placeholder="Enter your password"/>
+    </div>
+    <button class="login-btn" id="login-btn" onclick="handleLogin()">Sign In</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+  <div class="login-note">Access restricted to authorised organisations only</div>
+</div>
+
+<!-- CHAT -->
+<div id="chat-screen">
+  <header>
+    <div class="crucifix-wrap" style="font-size:32px;color:#c9a84c;letter-spacing:4px;margin-bottom:10px;">✝</div>
+    <h1>Archdiocese Hackathon 2026</h1>
+    <h2>Problem Statement Helper</h2>
+    <div class="divider" style="margin:12px auto 0;"></div>
+  </header>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-label">
+      <span id="progress-label-text">Getting started...</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+
+  <div id="chat-wrap">
+    <div id="messages"></div>
+    <div class="input-area">
+      <textarea id="user-input" placeholder="Type your response here..." rows="1"></textarea>
+      <button id="send-btn">➤</button>
+    </div>
+  </div>
+
+  <div id="summary-panel">
+    <h2>✦ Your Problem Statement Brief</h2>
+    <div id="sub-status" class="sub-status saving">⏳ Saving your submission...</div>
+    <div id="summary-content"></div>
+    <div class="summary-actions">
+      <button class="btn-copy" onclick="copyBrief()">⎘ Copy to Clipboard</button>
+      <button class="btn-download" onclick="downloadBrief()">↓ Download as Text File</button>
+      <button class="btn-restart" onclick="restartChat()">↺ Start Over</button>
+    </div>
+  </div>
+</div>
+
+<footer>Digital Church Office</footer>
+
+<!-- DEV PREVIEW BAR — remove before going live -->
+<div id="dev-bar" style="position:fixed;bottom:0;left:0;right:0;background:#1a1428;border-top:1px solid #c9a84c44;padding:8px 16px;display:flex;gap:8px;align-items:center;z-index:999;">
+  <span style="font-size:11px;color:#7a7060;margin-right:4px;">Preview:</span>
+  <button onclick="showScreen('login')" style="font-size:11px;padding:4px 10px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);border-radius:6px;color:#c9a84c;cursor:pointer;">Login</button>
+  <button onclick="showScreen('chat')" style="font-size:11px;padding:4px 10px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);border-radius:6px;color:#c9a84c;cursor:pointer;">Chat</button>
+  <button onclick="showScreen('summary')" style="font-size:11px;padding:4px 10px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);border-radius:6px;color:#c9a84c;cursor:pointer;">Summary</button>
+</div>
+<div style="height:40px;"></div>
+
+<script>
+var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxVX6-NTDcibQlGf3iabo0c3sZbVWvfnyGvD3vzoOVM4Up_kWXl_j-Eb1n-5OP0iM1o/exec";
+var SECRET_KEY = "fiathack26";
+
+var chatHistory = [], briefText = "", orgName = "", transcriptLog = [];
+
+document.getElementById("password").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") handleLogin();
+});
+
+function showScreen(screen) {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("chat-screen").style.display = "none";
+  document.getElementById("summary-panel").style.display = "none";
+  if (screen === "login") {
+    document.getElementById("login-screen").style.display = "block";
+  } else if (screen === "chat") {
+    document.getElementById("chat-screen").style.display = "flex";
+    if (!chatHistory.length) {
+      addMessage("bot", "Welcome! I'm here to help you craft your problem statements. This is a preview of the chat screen.");
+    }
+  } else if (screen === "summary") {
+    document.getElementById("chat-screen").style.display = "flex";
+    document.getElementById("summary-panel").style.display = "block";
+    document.getElementById("summary-content").textContent = "STAKEHOLDER PROBLEM STATEMENT BRIEF\nCatholic Digital Hackathon\n\nORGANISATION\nName: Sample Organisation\nWho we serve: Parish communities\nWhat we do: Faith formation and outreach\nScale: ~5,000 Catholics across 3 parishes\n\n---\n\nPROBLEM STATEMENT 1: Volunteer Coordinator Burnout\nWho is affected: Parish volunteer coordinators\nCurrent situation: Managed via WhatsApp\nWhy it falls short: No central tracking\nImpact: Miscommunication, no-shows\nProblem statement: \"Volunteer coordinators need a way to manage sign-ups because WhatsApp is unreliable, resulting in admin overload.\"\nScale & scope: ~20 coordinators, weekly\n\n---\n\nCONTEXT FOR PARTICIPANTS\nConstraints: Low tech literacy, volunteer-run\nWhat success looks like: Coordinators spend less than 30 min/week on admin";
+    document.getElementById("sub-status").className = "sub-status success";
+    document.getElementById("sub-status").textContent = "✓ Submission saved. The organising team has received your brief.";
+    setProgress(100);
+    document.getElementById("summary-panel").scrollIntoView({ behavior: "smooth" });
+  }
+}
+
+function handleLogin() {
+  /* LOGIN BYPASSED FOR TESTING — restore before going live
+  var btn = document.getElementById("login-btn");
+  var errEl = document.getElementById("login-error");
+  var u = document.getElementById("username").value.trim();
+  var p = document.getElementById("password").value.trim();
+  if (!u || !p) { errEl.textContent = "Please enter both username and password."; return; }
+  btn.disabled = true;
+  btn.textContent = "Signing in...";
+  errEl.textContent = "";
+  fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "login", username: u, password: p })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.status === "success") {
+      document.getElementById("login-screen").style.display = "none";
+      document.getElementById("chat-screen").style.display = "flex";
+      initChat();
+    } else {
+      errEl.textContent = "Invalid username or password. Please try again.";
+      btn.disabled = false;
+      btn.textContent = "Sign In";
+    }
+  })
+  .catch(function() {
+    errEl.textContent = "Connection error. Please try again.";
+    btn.disabled = false;
+    btn.textContent = "Sign In";
+  });
+  */
+  // TESTING: skip login and go straight to chat
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("chat-screen").style.display = "flex";
+  initChat();
+}
+
+var messagesEl = document.getElementById("messages");
+var inputEl = document.getElementById("user-input");
+var sendBtn = document.getElementById("send-btn");
+
+function setProgress(pct) {
+  document.getElementById("progress-fill").style.width = pct + "%";
+  document.getElementById("progress-pct").textContent = pct + "%";
+  var lbl = document.getElementById("progress-label-text");
+  if (pct < 15) lbl.textContent = "Getting started...";
+  else if (pct < 50) lbl.textContent = "Building your first problem statement...";
+  else if (pct < 75) lbl.textContent = "Building your second problem statement...";
+  else if (pct < 90) lbl.textContent = "Wrapping up the details...";
+  else if (pct < 100) lbl.textContent = "Almost done...";
+  else lbl.textContent = "Brief complete ✓";
+}
+
+function addMessage(role, text) {
+  var wrap = document.createElement("div");
+  wrap.className = "msg " + role;
+  var av = document.createElement("div");
+  av.className = "avatar " + role;
+  if (role === "bot") {
+    av.textContent = "✝";
+  av.style.fontSize = "16px";
+  av.style.color = "#fff";
+  } else {
+    av.textContent = "✦";
+    av.style.fontSize = "14px";
+    av.style.color = "#fff";
+  }
+  var bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.innerHTML = text
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.*?)\*/g, "<em>$1</em>")
+    .replace(/\n/g, "<br>");
+  wrap.appendChild(av);
+  wrap.appendChild(bubble);
+  messagesEl.appendChild(wrap);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function showTyping() {
+  var wrap = document.createElement("div");
+  wrap.className = "msg bot";
+  wrap.id = "typing";
+  var av = document.createElement("div");
+  av.className = "avatar bot";
+  av.textContent = "✝";
+  av.style.fontSize = "16px";
+  av.style.color = "#fff";
+  var b = document.createElement("div");
+  b.className = "bubble typing-dots";
+  b.innerHTML = "<span></span><span></span><span></span>";
+  wrap.appendChild(av);
+  wrap.appendChild(b);
+  messagesEl.appendChild(wrap);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function removeTyping() {
+  var t = document.getElementById("typing");
+  if (t) t.remove();
+}
+
+function stripMeta(t) {
+  return t
+    .replace(/\[PROGRESS:\d+\]\s*/gm, "")
+    .replace(/\[ORG:[^\]]+\]\s*/gm, "")
+    .replace(/\[BRIEF_START\][\s\S]*?\[BRIEF_END\]/, "")
+    .trim();
+}
+
+function extract(text, pattern) {
+  var m = text.match(pattern);
+  return m ? m[1] : null;
+}
+
+function callChat(msgs) {
+  return fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "chat", secret: SECRET_KEY, messages: msgs })
+  }).then(function(r) { return r.json(); });
+}
+
+function sendMessage(userText) {
+  if (!userText.trim()) return;
+  sendBtn.disabled = true;
+  addMessage("user", userText);
+  transcriptLog.push({ role: "You", text: userText });
+  chatHistory.push({ role: "user", content: userText });
+  inputEl.value = "";
+  inputEl.style.height = "48px";
+  showTyping();
+
+  callChat(chatHistory)
+  .then(function(data) {
+    removeTyping();
+    if (data.status === "error") {
+      addMessage("bot", "Something went wrong: " + data.message);
+      sendBtn.disabled = false;
+      return;
+    }
+    var raw = data.content;
+    var pct = extract(raw, /\[PROGRESS:(\d+)\]/);
+    if (pct) setProgress(parseInt(pct));
+    var org = extract(raw, /\[ORG:([^\]]+)\]/);
+    if (org) orgName = org.trim();
+    var brief = extract(raw, /\[BRIEF_START\]([\s\S]*?)\[BRIEF_END\]/);
+    var clean = stripMeta(raw);
+
+    if (brief) {
+      briefText = brief.trim();
+      if (clean) { addMessage("bot", clean); transcriptLog.push({ role: "Guide", text: clean }); }
+      chatHistory.push({ role: "assistant", content: raw });
+      showSummary();
+    } else {
+      addMessage("bot", clean);
+      transcriptLog.push({ role: "Guide", text: clean });
+      chatHistory.push({ role: "assistant", content: raw });
+    }
+    sendBtn.disabled = false;
+    inputEl.focus();
+  })
+  .catch(function() {
+    removeTyping();
+    addMessage("bot", "Connection error. Please try again.");
+    sendBtn.disabled = false;
+  });
+}
+
+function showSummary() {
+  var panel = document.getElementById("summary-panel");
+  var statusEl = document.getElementById("sub-status");
+  document.getElementById("summary-content").textContent = briefText;
+  panel.style.display = "block";
+  panel.scrollIntoView({ behavior: "smooth" });
+  setProgress(100);
+  statusEl.className = "sub-status saving";
+  statusEl.textContent = "⏳ Saving your submission...";
+
+  var transcript = transcriptLog.map(function(e) { return e.role + ": " + e.text; }).join("\n\n");
+  fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "save", secret: SECRET_KEY, orgName: orgName, transcript: transcript, brief: briefText })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(result) {
+    if (result.status === "success") {
+      statusEl.className = "sub-status success";
+      statusEl.textContent = "✓ Submission saved. The organising team has received your brief.";
+    } else { throw new Error(); }
+  })
+  .catch(function() {
+    statusEl.className = "sub-status error";
+    statusEl.textContent = "⚠ Could not save automatically. Please download your brief and send it to the organising team.";
+  });
+}
+
+function copyBrief() {
+  navigator.clipboard.writeText(briefText).then(function() {
+    var btn = document.querySelector(".btn-copy");
+    btn.textContent = "✓ Copied!";
+    setTimeout(function() { btn.textContent = "⎘ Copy to Clipboard"; }, 2000);
+  });
+}
+
+function downloadBrief() {
+  var blob = new Blob([briefText], { type: "text/plain" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "Brief_" + (orgName || "Organisation").replace(/\s+/g, "_") + ".txt";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function restartChat() {
+  chatHistory = []; briefText = ""; orgName = ""; transcriptLog = [];
+  messagesEl.innerHTML = "";
+  document.getElementById("summary-panel").style.display = "none";
+  setProgress(0);
+  initChat();
+}
+
+inputEl.addEventListener("input", function() {
+  inputEl.style.height = "48px";
+  inputEl.style.height = Math.min(inputEl.scrollHeight, 140) + "px";
+});
+inputEl.addEventListener("keydown", function(e) {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(inputEl.value); }
+});
+sendBtn.addEventListener("click", function() { sendMessage(inputEl.value); });
+
+function initChat() {
+  sendBtn.disabled = true;
+  showTyping();
+  callChat([{ role: "user", content: "Hello, I'm ready to begin." }])
+  .then(function(data) {
+    removeTyping();
+    if (data.content) {
+      var raw = data.content;
+      var pct = extract(raw, /\[PROGRESS:(\d+)\]/);
+      if (pct) setProgress(parseInt(pct));
+      var clean = stripMeta(raw);
+      addMessage("bot", clean);
+      transcriptLog.push({ role: "Guide", text: clean });
+      chatHistory.push({ role: "user", content: "Hello, I'm ready to begin." });
+      chatHistory.push({ role: "assistant", content: raw });
+    }
+    sendBtn.disabled = false;
+  })
+  .catch(function() {
+    removeTyping();
+    addMessage("bot", "Welcome! Something went wrong loading. Please refresh and try again.");
+    sendBtn.disabled = false;
+  });
+}
+</script>
+</body>
+</html>
