@@ -166,6 +166,14 @@ document.getElementById("password").addEventListener("keydown", function(e) {
   if (e.key === "Enter") handleLogin();
 });
 
+function appsScriptFetch(data) {
+  return fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain" },
+    body: JSON.stringify(data)
+  }).then(function(r) { return r.json(); });
+}
+
 function handleLogin() {
   var btn = document.getElementById("login-btn");
   var errEl = document.getElementById("login-error");
@@ -175,12 +183,7 @@ function handleLogin() {
   btn.disabled = true;
   btn.textContent = "Signing in...";
   errEl.textContent = "";
-  fetch(APPS_SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "login", username: u, password: p })
-  })
-  .then(function(r) { return r.json(); })
+  appsScriptFetch({ action: "login", username: u, password: p })
   .then(function(data) {
     if (data.status === "success") {
       document.getElementById("login-screen").style.display = "none";
@@ -269,11 +272,7 @@ function extract(text, pattern) {
 }
 
 function callChat(msgs) {
-  return fetch(APPS_SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "chat", secret: SECRET_KEY, messages: msgs })
-  }).then(function(r) { return r.json(); });
+  return appsScriptFetch({ action: "chat", secret: SECRET_KEY, messages: msgs });
 }
 
 function sendMessage(userText) {
@@ -329,11 +328,7 @@ function showSummary() {
   statusEl.className = "sub-status saving";
   statusEl.textContent = "⏳ Saving your submission...";
   var transcript = transcriptLog.map(function(e) { return e.role + ": " + e.text; }).join("\n\n");
-  fetch(APPS_SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "save", secret: SECRET_KEY, orgName: orgName, transcript: transcript, brief: briefText })
-  })
+  appsScriptFetch({ action: "save", secret: SECRET_KEY, orgName: orgName, transcript: transcript, brief: briefText })
   .then(function(r) { return r.json(); })
   .then(function(result) {
     if (result.status === "success") {
