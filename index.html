@@ -14,7 +14,7 @@
   #login-screen { width: 100%; max-width: 420px; padding: 40px 16px; }
   #login-screen h1 { font-family: 'Crimson Text', serif; font-size: 22px; color: #f0e6c8; text-align: center; margin-bottom: 2px; }
   #login-screen h2 { font-family: 'Crimson Text', serif; font-size: 15px; color: #a09880; text-align: center; font-weight: 400; font-style: italic; margin-bottom: 4px; }
-  .crucifix-wrap { display: flex; justify-content: center; margin-bottom: 12px; }
+  .cross-wrap { display: flex; justify-content: center; font-size: 32px; color: #c9a84c; margin-bottom: 12px; }
   .divider { width: 40px; height: 1px; background: linear-gradient(90deg,transparent,#c9a84c,transparent); margin: 12px auto 20px; }
   .login-box { background: rgba(255,255,255,0.04); border: 1px solid rgba(201,168,76,0.2); border-radius: 16px; padding: 32px; }
   .field-label { font-size: 12px; color: #a09880; margin-bottom: 6px; }
@@ -44,10 +44,9 @@
   .msg { display: flex; gap: 10px; animation: fadeIn 0.3s ease; }
   @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
   .msg.user { flex-direction: row-reverse; }
-  .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
-  .avatar.bot { background: linear-gradient(135deg,#1565c0,#0d47a1); }
-  .avatar.user { background: linear-gradient(135deg,#c0392b,#e67e22); }
-  .avatar svg { width: 16px; height: 22px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; margin-top: 2px; }
+  .avatar.bot { background: linear-gradient(135deg,#1565c0,#0d47a1); color: #fff; }
+  .avatar.user { background: linear-gradient(135deg,#c0392b,#e67e22); color: #fff; font-size: 13px; }
   .bubble { max-width: 82%; padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.65; }
   .msg.bot .bubble { background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2); border-bottom-left-radius: 4px; color: #e8e0d0; }
   .msg.user .bubble { background: rgba(21,101,192,0.2); border: 1px solid rgba(21,101,192,0.3); border-bottom-right-radius: 4px; color: #ddeeff; }
@@ -64,6 +63,8 @@
   #send-btn { background: linear-gradient(135deg,#1565c0,#0d47a1); border: none; border-radius: 10px; color: #fff; cursor: pointer; font-size: 18px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s; flex-shrink: 0; }
   #send-btn:hover { opacity: 0.85; }
   #send-btn:disabled { opacity: 0.4; cursor: default; }
+
+  /* SUMMARY */
   #summary-panel { display: none; width: 100%; max-width: 760px; margin: 0 16px 24px; background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.25); border-radius: 12px; padding: 24px; }
   #summary-panel h2 { font-family: 'Crimson Text',serif; font-size: 20px; color: #c9a84c; margin-bottom: 8px; }
   .sub-status { font-size: 12px; margin-bottom: 16px; padding: 8px 12px; border-radius: 6px; }
@@ -77,17 +78,19 @@
   .btn-download { background: linear-gradient(135deg,#1565c0,#0d47a1); color: #fff; }
   .btn-restart { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1) !important; color: #a09880; }
   .summary-actions button:hover { opacity: 0.8; }
+
+  /* DEV BAR */
+  #dev-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #1a1428; border-top: 1px solid #c9a84c44; padding: 8px 16px; gap: 8px; align-items: center; z-index: 999; }
+
   footer { padding: 16px; font-size: 11px; color: #4a4438; text-align: center; font-style: italic; }
 </style>
 </head>
 <body>
 <div class="top-bar"></div>
 
-
-
 <!-- LOGIN -->
 <div id="login-screen">
-  <div class="crucifix-wrap" style="font-size:32px;color:#c9a84c;letter-spacing:4px;">✝</div>
+  <div class="cross-wrap">✝</div>
   <h1>Archdiocese Hackathon 2026</h1>
   <h2>Problem Statement Helper</h2>
   <div class="divider"></div>
@@ -109,7 +112,7 @@
 <!-- CHAT -->
 <div id="chat-screen">
   <header>
-    <div class="crucifix-wrap" style="font-size:32px;color:#c9a84c;letter-spacing:4px;margin-bottom:10px;">✝</div>
+    <div class="cross-wrap" style="font-size:32px;margin-bottom:10px;">✝</div>
     <h1>Archdiocese Hackathon 2026</h1>
     <h2>Problem Statement Helper</h2>
     <div class="divider" style="margin:12px auto 0;"></div>
@@ -145,49 +148,25 @@
 
 <footer>Digital Church Office</footer>
 
-<!-- DEV PREVIEW BAR — shown only for admin login -->
-<div id="dev-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a1428;border-top:1px solid #c9a84c44;padding:8px 16px;gap:8px;align-items:center;z-index:999;">
+<!-- DEV BAR — admin only -->
+<div id="dev-bar">
   <span style="font-size:11px;color:#7a7060;margin-right:4px;">Preview:</span>
   <button onclick="showScreen('login')" style="font-size:11px;padding:4px 10px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);border-radius:6px;color:#c9a84c;cursor:pointer;">Login</button>
   <button onclick="showScreen('chat')" style="font-size:11px;padding:4px 10px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);border-radius:6px;color:#c9a84c;cursor:pointer;">Chat</button>
   <button onclick="showScreen('summary')" style="font-size:11px;padding:4px 10px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);border-radius:6px;color:#c9a84c;cursor:pointer;">Summary</button>
 </div>
-<div style="height:40px;"></div>
 
 <script>
 var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyDF9geY0f8MHuBPGtym0Z7zqPXFbQL2O39Ve72aECdhSOXhj8n4AIsmrAXLhKhSG6o/exec";
 var SECRET_KEY = "fiathack26";
-
 var chatHistory = [], briefText = "", orgName = "", transcriptLog = [];
 
+// --- LOGIN ---
 document.getElementById("password").addEventListener("keydown", function(e) {
   if (e.key === "Enter") handleLogin();
 });
 
-function showScreen(screen) {
-  document.getElementById("login-screen").style.display = "none";
-  document.getElementById("chat-screen").style.display = "none";
-  document.getElementById("summary-panel").style.display = "none";
-  if (screen === "login") {
-    document.getElementById("login-screen").style.display = "block";
-  } else if (screen === "chat") {
-    document.getElementById("chat-screen").style.display = "flex";
-    if (!chatHistory.length) {
-      addMessage("bot", "Welcome! I'm here to help you craft your problem statements. This is a preview of the chat screen.");
-    }
-  } else if (screen === "summary") {
-    document.getElementById("chat-screen").style.display = "flex";
-    document.getElementById("summary-panel").style.display = "block";
-    document.getElementById("summary-content").textContent = "STAKEHOLDER PROBLEM STATEMENT BRIEF\nCatholic Digital Hackathon\n\nORGANISATION\nName: Sample Organisation\nWho we serve: Parish communities\nWhat we do: Faith formation and outreach\nScale: ~5,000 Catholics across 3 parishes\n\n---\n\nPROBLEM STATEMENT 1: Volunteer Coordinator Burnout\nWho is affected: Parish volunteer coordinators\nCurrent situation: Managed via WhatsApp\nWhy it falls short: No central tracking\nImpact: Miscommunication, no-shows\nProblem statement: \"Volunteer coordinators need a way to manage sign-ups because WhatsApp is unreliable, resulting in admin overload.\"\nScale & scope: ~20 coordinators, weekly\n\n---\n\nCONTEXT FOR PARTICIPANTS\nConstraints: Low tech literacy, volunteer-run\nWhat success looks like: Coordinators spend less than 30 min/week on admin";
-    document.getElementById("sub-status").className = "sub-status success";
-    document.getElementById("sub-status").textContent = "✓ Submission saved. The organising team has received your brief.";
-    setProgress(100);
-    document.getElementById("summary-panel").scrollIntoView({ behavior: "smooth" });
-  }
-}
-
 function handleLogin() {
-  /* LOGIN BYPASSED FOR TESTING — restore before going live
   var btn = document.getElementById("login-btn");
   var errEl = document.getElementById("login-error");
   var u = document.getElementById("username").value.trim();
@@ -207,8 +186,7 @@ function handleLogin() {
       document.getElementById("login-screen").style.display = "none";
       document.getElementById("chat-screen").style.display = "flex";
       if (data.isAdmin) {
-        var bar = document.getElementById("dev-bar");
-        bar.style.display = "flex";
+        document.getElementById("dev-bar").style.display = "flex";
       }
       initChat();
     } else {
@@ -222,13 +200,9 @@ function handleLogin() {
     btn.disabled = false;
     btn.textContent = "Sign In";
   });
-  */
-  // TESTING: skip login and go straight to chat
-  document.getElementById("login-screen").style.display = "none";
-  document.getElementById("chat-screen").style.display = "flex";
-  initChat();
 }
 
+// --- CHAT ---
 var messagesEl = document.getElementById("messages");
 var inputEl = document.getElementById("user-input");
 var sendBtn = document.getElementById("send-btn");
@@ -250,15 +224,7 @@ function addMessage(role, text) {
   wrap.className = "msg " + role;
   var av = document.createElement("div");
   av.className = "avatar " + role;
-  if (role === "bot") {
-    av.textContent = "✝";
-  av.style.fontSize = "16px";
-  av.style.color = "#fff";
-  } else {
-    av.textContent = "✦";
-    av.style.fontSize = "14px";
-    av.style.color = "#fff";
-  }
+  av.textContent = role === "bot" ? "✝" : "✦";
   var bubble = document.createElement("div");
   bubble.className = "bubble";
   bubble.innerHTML = text
@@ -273,18 +239,13 @@ function addMessage(role, text) {
 
 function showTyping() {
   var wrap = document.createElement("div");
-  wrap.className = "msg bot";
-  wrap.id = "typing";
+  wrap.className = "msg bot"; wrap.id = "typing";
   var av = document.createElement("div");
-  av.className = "avatar bot";
-  av.textContent = "✝";
-  av.style.fontSize = "16px";
-  av.style.color = "#fff";
+  av.className = "avatar bot"; av.textContent = "✝";
   var b = document.createElement("div");
   b.className = "bubble typing-dots";
   b.innerHTML = "<span></span><span></span><span></span>";
-  wrap.appendChild(av);
-  wrap.appendChild(b);
+  wrap.appendChild(av); wrap.appendChild(b);
   messagesEl.appendChild(wrap);
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
@@ -321,10 +282,8 @@ function sendMessage(userText) {
   addMessage("user", userText);
   transcriptLog.push({ role: "You", text: userText });
   chatHistory.push({ role: "user", content: userText });
-  inputEl.value = "";
-  inputEl.style.height = "48px";
+  inputEl.value = ""; inputEl.style.height = "48px";
   showTyping();
-
   callChat(chatHistory)
   .then(function(data) {
     removeTyping();
@@ -340,7 +299,6 @@ function sendMessage(userText) {
     if (org) orgName = org.trim();
     var brief = extract(raw, /\[BRIEF_START\]([\s\S]*?)\[BRIEF_END\]/);
     var clean = stripMeta(raw);
-
     if (brief) {
       briefText = brief.trim();
       if (clean) { addMessage("bot", clean); transcriptLog.push({ role: "Guide", text: clean }); }
@@ -370,7 +328,6 @@ function showSummary() {
   setProgress(100);
   statusEl.className = "sub-status saving";
   statusEl.textContent = "⏳ Saving your submission...";
-
   var transcript = transcriptLog.map(function(e) { return e.role + ": " + e.text; }).join("\n\n");
   fetch(APPS_SCRIPT_URL, {
     method: "POST",
@@ -416,6 +373,26 @@ function restartChat() {
   initChat();
 }
 
+// --- DEV PREVIEW (admin only) ---
+function showScreen(screen) {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("chat-screen").style.display = "none";
+  document.getElementById("summary-panel").style.display = "none";
+  if (screen === "login") {
+    document.getElementById("login-screen").style.display = "block";
+  } else if (screen === "chat") {
+    document.getElementById("chat-screen").style.display = "flex";
+    if (!chatHistory.length) addMessage("bot", "Welcome! This is a preview of the chat screen.");
+  } else if (screen === "summary") {
+    document.getElementById("chat-screen").style.display = "flex";
+    document.getElementById("summary-panel").style.display = "block";
+    document.getElementById("summary-content").textContent = "STAKEHOLDER PROBLEM STATEMENT BRIEF\nCatholic Digital Hackathon\n\nORGANISATION\nName: Sample Organisation\nWho we serve: Parish communities\nWhat we do: Faith formation and outreach\nScale: ~5,000 Catholics across 3 parishes\n\n---\n\nPROBLEM STATEMENT 1: Volunteer Coordinator Burnout\nWho is affected: Parish volunteer coordinators\nCurrent situation: Managed via WhatsApp\nWhy it falls short: No central tracking\nImpact: Miscommunication, no-shows\nProblem statement: \"Volunteer coordinators need a way to manage sign-ups because WhatsApp is unreliable, resulting in admin overload.\"\nScale & scope: ~20 coordinators, weekly\n\n---\n\nCONTEXT FOR PARTICIPANTS\nConstraints: Low tech literacy, volunteer-run\nWhat success looks like: Coordinators spend less than 30 min/week on admin";
+    document.getElementById("sub-status").className = "sub-status success";
+    document.getElementById("sub-status").textContent = "✓ Submission saved. The organising team has received your brief.";
+    setProgress(100);
+  }
+}
+
 inputEl.addEventListener("input", function() {
   inputEl.style.height = "48px";
   inputEl.style.height = Math.min(inputEl.scrollHeight, 140) + "px";
@@ -428,7 +405,7 @@ sendBtn.addEventListener("click", function() { sendMessage(inputEl.value); });
 function initChat() {
   sendBtn.disabled = true;
   showTyping();
-  callChat([{ role: "user", content: "Hello, I'm ready to begin." }])
+  callChat([{ role: "user", content: "Hello, I am ready to begin." }])
   .then(function(data) {
     removeTyping();
     if (data.content) {
@@ -438,14 +415,14 @@ function initChat() {
       var clean = stripMeta(raw);
       addMessage("bot", clean);
       transcriptLog.push({ role: "Guide", text: clean });
-      chatHistory.push({ role: "user", content: "Hello, I'm ready to begin." });
+      chatHistory.push({ role: "user", content: "Hello, I am ready to begin." });
       chatHistory.push({ role: "assistant", content: raw });
     }
     sendBtn.disabled = false;
   })
   .catch(function() {
     removeTyping();
-    addMessage("bot", "Welcome! Something went wrong loading. Please refresh and try again.");
+    addMessage("bot", "Connection error. Please check your connection and try again.");
     sendBtn.disabled = false;
   });
 }
