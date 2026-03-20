@@ -145,8 +145,8 @@
 
 <footer>Digital Church Office</footer>
 
-<!-- DEV PREVIEW BAR — remove before going live -->
-<div id="dev-bar" style="position:fixed;bottom:0;left:0;right:0;background:#1a1428;border-top:1px solid #c9a84c44;padding:8px 16px;display:flex;gap:8px;align-items:center;z-index:999;">
+<!-- DEV PREVIEW BAR — shown only for admin login -->
+<div id="dev-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a1428;border-top:1px solid #c9a84c44;padding:8px 16px;gap:8px;align-items:center;z-index:999;">
   <span style="font-size:11px;color:#7a7060;margin-right:4px;">Preview:</span>
   <button onclick="showScreen('login')" style="font-size:11px;padding:4px 10px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);border-radius:6px;color:#c9a84c;cursor:pointer;">Login</button>
   <button onclick="showScreen('chat')" style="font-size:11px;padding:4px 10px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);border-radius:6px;color:#c9a84c;cursor:pointer;">Chat</button>
@@ -206,6 +206,10 @@ function handleLogin() {
     if (data.status === "success") {
       document.getElementById("login-screen").style.display = "none";
       document.getElementById("chat-screen").style.display = "flex";
+      if (data.isAdmin) {
+        var bar = document.getElementById("dev-bar");
+        bar.style.display = "flex";
+      }
       initChat();
     } else {
       errEl.textContent = "Invalid username or password. Please try again.";
